@@ -4,8 +4,6 @@ var http = require('http')
 var options = {
 	host: "localhost",
 	port: 5984,
-	path: '/crud',
-	method: 'GET',
 	headers: {
 		'Content-Type': 'application/json'
 	}
@@ -135,7 +133,7 @@ Model.prototype.put = function(pid, data, cb) {
 		});
 		req.write(data);
 		req.end();
-	});
+	}.bind(this));
 };
 
 exports.Productos = new Model('crud', 'producto');
