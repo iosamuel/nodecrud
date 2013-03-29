@@ -1,9 +1,9 @@
 var models = require('./models');
 
-var productos = new models.Productos();
+var productos = models.Productos;
 
 exports.index = function(req, res) {
-	productos.findAll({ descending:true }, function(results){
+	productos.findAll({ design:'productos', view:'all' }, { descending:true }, function(results){
 		res.render('index', {productos:results.rows});
 	});
 };

@@ -11,10 +11,13 @@ var options = {
 	}
 };
 
-var Productos = exports.Productos = function(){};
+var Model = function(db, type){
+	this.db = db;
+	this.type = type;
+};
 
-Productos.prototype.get = function(pid, cb) {
-	options.path = '/crud/'+pid;
+Model.prototype.findAll = function(desview, opts, cb) {
+	options.path = '/'+this.db+'/_design/'+desview.design+'/_view/'+desview.view+'?'+querystring.stringify(opts);
 	options.method = 'GET';
 
 	var results = '';
@@ -31,8 +34,8 @@ Productos.prototype.get = function(pid, cb) {
 	req.end();
 };
 
-Productos.prototype.findAll = function(opts, cb) {
-	options.path = '/crud/_design/productos/_view/all?'+querystring.stringify(opts);
+Model.prototype.get = function(pid, cb) {
+	options.path = '/'+this.db+'/'+pid;
 	options.method = 'GET';
 
 	var results = '';
@@ -49,10 +52,10 @@ Productos.prototype.findAll = function(opts, cb) {
 	req.end();
 };
 
-Productos.prototype.post = function(data, cb) {
-	options.path = '/crud';
+Model.prototype.post = function(data, cb) {
+	options.path = '/'+this.db+'/';
 	options.method = 'POST';
-	data.type = 'producto';
+	data.type = this.type;
 	data = JSON.stringify(data);
 
 	var result = '';
@@ -75,11 +78,11 @@ Productos.prototype.post = function(data, cb) {
 	req.end();
 };
 
-Productos.prototype.delete = function(pid, cb) {
+Model.prototype.delete = function(pid, cb) {
 	this.get(pid, function(result){
 		var fullPid = result._id + '?rev=' + result._rev;
 
-		options.path = '/crud/'+fullPid;
+		options.path = '/'+this.db+'/'+fullPid;
 		options.method = 'DELETE';
 
 		var result = '';
@@ -103,14 +106,14 @@ Productos.prototype.delete = function(pid, cb) {
 	});
 };
 
-Productos.prototype.put = function(pid, data, cb) {
-	data.type = 'producto';
+Model.prototype.put = function(pid, data, cb) {
+	data.type = this.type;
 	data = JSON.stringify(data);
 
 	this.get(pid, function(result){
 		var fullPid = result._id + '?rev=' + result._rev;
 
-		options.path = '/crud/'+fullPid;
+		options.path = '/'+this.db+'/'+fullPid;
 		options.method = 'PUT';
 
 		var result = '';
@@ -134,3 +137,5 @@ Productos.prototype.put = function(pid, data, cb) {
 		req.end();
 	});
 };
+
+exports.Productos = new Model('crud', 'producto');
