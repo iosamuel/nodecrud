@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+	<title>Inicio</title>
+	<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="/static/bootstrap/css/bootstrap-responsive.min.css">
+</head>
+<body>
+
+	<div class="container">
+		<table class="table table-hover">
+			<thead>
+				<tr>
+					<th>Nombre</th>
+					<th>Precio</th>
+					<th>Usuario</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<% if (productos.length) { %>
+					<% for (var i=0;i<productos.length;i++){ %>
+						<tr>
+							<td><%= productos[i].value.nombre %></td>
+							<td><%= productos[i].value.precio %></td>
+							<td><%= productos[i].value.user %></td>
+							<td><a href="/delete/<%= productos[i].id %>" class="btn btn-danger"><i class="icon-white icon-trash"></i> Eliminar</a></td>
+							<td><a href="/editar/<%= productos[i].id %>" class="btn btn-primary"><i class="icon-white icon-edit"></i> Editar</a></td>
+						<tr>
+					<% } %>
+				<% } else { %>
+					<tr>
+						<td colspan="5">No hay productos.</td>
+					</tr>
+				<% } %>
+			</tbody>
+		</table>
+		<a href="/agregar" class="btn"><i class="icon-plus"></i> Agregar</a>
+	</div>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="/static/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
