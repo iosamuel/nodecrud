@@ -5,7 +5,8 @@ var options = {
 	host: "localhost",
 	port: 5984,
 	headers: {
-		'Content-Type': 'application/json'
+		'Content-Type': 'application/json',
+		'Authorization': 'Basic ' + new Buffer('admin:passwd').toString('base64')
 	}
 };
 
@@ -101,7 +102,7 @@ Model.prototype.delete = function(pid, cb) {
 				});
 		});
 		req.end();
-	});
+	}.bind(this));
 };
 
 Model.prototype.put = function(pid, data, cb) {
