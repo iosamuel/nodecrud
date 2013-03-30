@@ -30,7 +30,7 @@ Model.prototype._makeReq = function(safe, data, cb) {
 	req.end();
 };
 
-Model.prototype.findAll = function(desview, opts, cb) {
+Model.prototype.view = function(desview, opts, cb) {
 	options.path = '/'+this.db+'/_design/'+desview.design+'/_view/'+desview.view+'?'+querystring.stringify(opts);
 	options.method = 'GET';
 

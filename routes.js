@@ -3,7 +3,7 @@ var models = require('./models');
 var productos = models.Productos;
 
 exports.index = function(req, res) {
-	productos.findAll({ design:'productos', view:'all' }, { descending:true }, function(results){
+	productos.view({ design:'productos', view:'all' }, { descending:true }, function(results){
 		res.render('index', {productos:results.rows});
 	});
 };
