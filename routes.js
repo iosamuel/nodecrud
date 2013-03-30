@@ -17,7 +17,7 @@ exports.add = function(req, res) {
 	if (post && post.nombre && post.precio && post.user){
 		post.precio = parseInt(post.precio);
 		productos.post(post, function(result){
-			if (result){
+			if (result.ok){
 				res.redirect('/');
 			} else {
 				res.send(500, 'Algo ha ido mal!');
@@ -31,7 +31,7 @@ exports.add = function(req, res) {
 exports.delete = function(req, res) {
 	if (req.params.id){
 		productos.delete(req.params.id, function(result){
-			if (result){
+			if (result.ok){
 				res.redirect('/');
 			} else {
 				res.send(500, 'Algo ha ido mal!');
@@ -45,7 +45,11 @@ exports.delete = function(req, res) {
 exports.editar = function(req, res) {
 	if (req.params.id){
 		productos.get(req.params.id, function(result){
-			res.render('editar', {producto:result});
+			if (result._id){
+				res.render('editar', {producto:result});
+			} else {
+				res.send(404, 'El producto no existe');
+			}
 		});
 	} else {
 		res.send(500, 'Debe especificar un ID');
@@ -55,7 +59,7 @@ exports.editar = function(req, res) {
 exports.edit = function(req, res) {
 	if (req.params.id && req.body){
 		productos.put(req.params.id, req.body, function(result){
-			if (result){
+			if (result.ok){
 				res.redirect('/');
 			} else {
 				res.send(500, 'Algo ha ido mal!');
