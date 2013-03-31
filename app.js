@@ -14,20 +14,20 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.csrf());
 	app.use('/static', express.static(__dirname+'/public'));
+	app.use(function(req, res, next){
+		res.locals.csrf_token = req.session._csrf;
+		delete req.body._csrf;
+		next();
+	});
 });
 
-var csrf = function(req, res, next){
-	res.locals.csrf_token = req.session._csrf;
-	next();
-};
-
 /* Rutas */
-app.get('/', csrf, routes.index);
+app.get('/', routes.index);
 
-app.get('/agregar', csrf, routes.agregar);
+app.get('/agregar', routes.agregar);
 app.post('/agregar', routes.add);
 
 app.post('/delete/:id', routes.delete);
 
-app.get('/editar/:id', csrf, routes.editar);
+app.get('/editar/:id', routes.editar);
 app.post('/editar/:id', routes.edit);
