@@ -14,7 +14,7 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.csrf());
 	app.use(function(req, res, next){
-		if ('GET' == req.method) res.locals.csrf_token = req.session._csrf;
+		if ('GET' == req.method) res.locals.csrf_token = '<input type="hidden" name="_csrf" value="'+req.session._csrf+'">';
 		if ('POST' == req.method) delete req.body._csrf;
 		next();
 	});

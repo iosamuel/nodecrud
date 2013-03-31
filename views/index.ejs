@@ -26,7 +26,7 @@
 							<td><%= productos[i].value.precio %></td>
 							<td><%= productos[i].value.user %></td>
 							<td>
-								<form action="/delete/<%= productos[i].id %>" method="post"><input type="hidden" name="_csrf" value="<%= csrf_token %>"><button type="submit" class="btn btn-danger"><i class="icon-white icon-trash"></i> Eliminar</button></form></td>
+								<form action="/delete/<%= productos[i].id %>" method="post"><%- csrf_token %><button type="submit" class="btn btn-danger"><i class="icon-white icon-trash"></i> Eliminar</button></form></td>
 							<td><a href="/editar/<%= productos[i].id %>" class="btn btn-primary"><i class="icon-white icon-edit"></i> Editar</a></td>
 						<tr>
 					<% } %>
