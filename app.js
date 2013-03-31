@@ -13,12 +13,12 @@ app.configure(function(){
 	app.use(express.session({ secret:'MySecretString' }));
 	app.use(express.bodyParser());
 	app.use(express.csrf());
-	app.use('/static', express.static(__dirname+'/public'));
 	app.use(function(req, res, next){
-		res.locals.csrf_token = req.session._csrf;
-		delete req.body._csrf;
+		if ('GET' == req.method) res.locals.csrf_token = req.session._csrf;
+		if ('POST' == req.method) delete req.body._csrf;
 		next();
 	});
+	app.use('/static', express.static(__dirname+'/public'));
 });
 
 /* Rutas */
