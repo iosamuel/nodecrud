@@ -14,6 +14,8 @@ exports.agregar = function(req, res) {
 
 exports.add = function(req, res) {
 	var post = req.body;
+	delete post._csrf;
+
 	if (post && post.nombre && post.precio && post.user){
 		post.precio = parseInt(post.precio);
 		productos.post(post, function(result){
@@ -58,7 +60,10 @@ exports.editar = function(req, res) {
 
 exports.edit = function(req, res) {
 	if (req.params.id && req.body){
-		productos.put(req.params.id, req.body, function(result){
+		var post = req.body;
+		delete req.body._csrf;
+
+		productos.put(req.params.id, post, function(result){
 			if (result.ok){
 				res.redirect('/');
 			} else {

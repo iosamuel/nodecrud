@@ -12,6 +12,7 @@
 			<h2>Editar producto</h2>
 		</div>
 		<form method="post">
+			<input type="hidden" name="_csrf" value="<%= csrf_token %>">
 			<label for="nombre">Nombre: </label><input type="text" name="nombre" id="nombre" value="<%= producto.nombre %>">
 			<label for="precio">Precio: </label><input type="text" name="precio" id="precio" value="<%= producto.precio %>">
 			<label for="user">Usuario: </label><input type="text" name="user" id="user" value="<%= producto.user %>"><br>
