@@ -80,3 +80,4 @@ Model.prototype.put = function(pid, data, cb) {
 };
 
 exports.Productos = new Model('crud', 'producto');
+exports.Users = new Model('crud', 'user');

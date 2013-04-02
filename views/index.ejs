@@ -8,6 +8,50 @@
 <body>
 
 	<div class="container">
+		<% if (!user) { %>
+			<a href="#ingresar" data-toggle="modal" class="label label-info pull-right">Ingresar</a>
+			<a href="#registrar" data-toggle="modal" class="label label-info pull-left">Registrar</a>
+
+			<div id="ingresar" class="modal hide fade">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3>Login</h3>
+				</div>
+				<div class="modal-body">
+					<form action="/login" method="post"><%- csrf_token %>
+						<input type="text" name="user" placeholder="Usuario...">
+						<input type="password" name="passwd" placeholder="Contraseña..."><br>
+						<button type="submit" class="btn btn-primary">Ingresar</button>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button data-dismiss="modal" class="btn">Close</button>
+				</div>
+			</div>
+
+			<div id="registrar" class="modal hide fade">
+				<div class="modal-header">
+					<button class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3>Registro</h3>
+				</div>
+				<div class="modal-body">
+					<form action="/signup" method="post"><%- csrf_token %>
+						<input type="text" name="user" placeholder="Usuario...">
+						<input type="password" name="passwd" placeholder="Contraseña..."><br>
+						<button type="submit" class="btn btn-primary">Registrar</button>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button data-dismiss="modal" class="btn">Close</button>
+				</div>
+			</div>
+		<% } else { %>
+			<a href="/logout" class="label label-warning pull-right">Cerrar Sesion</a>
+			<span class="label label-info pull-right">Bienvenido <%= user %></span>
+		<% } %>
+
+		<hr>
+
 		<table class="table table-hover">
 			<thead>
 				<tr>

@@ -14,20 +14,34 @@ app.configure(function(){
 	app.use(express.bodyParser());
 	app.use(express.csrf());
 	app.use(function(req, res, next){
-		if ('GET' == req.method) res.locals.csrf_token = '<input type="hidden" name="_csrf" value="'+req.session._csrf+'">';
-		if ('POST' == req.method) delete req.body._csrf;
+		if (req.method == 'GET') res.locals.csrf_token = '<input type="hidden" name="_csrf" value="'+req.session._csrf+'">';
+		if (req.method == 'POST') delete req.body._csrf;
+		next();
+	});
+	app.use(function(req, res, next){
+		res.locals.user = req.session.user;
 		next();
 	});
 	app.use('/static', express.static(__dirname+'/public'));
 });
 
+var login_required = function(req, res, next){
+	if (!req.session.user) return res.send(403, 'Acceso prohibido!');
+	next();
+};
+
 /* Rutas */
 app.get('/', routes.index);
 
-app.get('/agregar', routes.agregar);
-app.post('/agregar', routes.add);
+app.get('/agregar', login_required, routes.agregar);
+app.post('/agregar', login_required, routes.add);
 
-app.post('/delete/:id', routes.delete);
+app.post('/delete/:id', login_required, routes.delete);
 
-app.get('/editar/:id', routes.editar);
-app.post('/editar/:id', routes.edit);
+app.get('/editar/:id', login_required, routes.editar);
+app.post('/editar/:id', login_required, routes.edit);
+
+app.post('/login', routes.login);
+app.get('/logout', function(req, res){ delete req.session.user; res.redirect('/'); });
+
+app.post('/signup', routes.signup);
