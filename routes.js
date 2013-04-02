@@ -14,6 +14,12 @@ exports.index = function(req, res) {
 	});
 };
 
+exports.mios = function(req, res){
+	productos.view({ design:'productos', view:'all' }, { descending:true, key: '"'+req.session.user+'"' }, function(results){
+		res.render('index', {productos:results.rows});
+	});
+};
+
 exports.agregar = function(req, res) {
 	res.render('agregar');
 };

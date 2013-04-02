@@ -41,7 +41,6 @@ Model.prototype.get = function(pid, cb) {
 	options.path = '/'+this.db+'/'+pid;
 	options.method = 'GET';
 
-
 	this._makeReq(false, null, cb);
 };
 
@@ -61,7 +60,7 @@ Model.prototype.delete = function(pid, cb) {
 		options.path = '/'+this.db+'/'+fullPid;
 		options.method = 'DELETE';
 
-		this._makeReq(false, null, cb)
+		this._makeReq(false, null, cb);
 	}.bind(this));
 };
 

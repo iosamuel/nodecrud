@@ -32,6 +32,7 @@ var login_required = function(req, res, next){
 
 /* Rutas */
 app.get('/', routes.index);
+app.get('/mios', routes.mios);
 
 app.get('/agregar', login_required, routes.agregar);
 app.post('/agregar', login_required, routes.add);
