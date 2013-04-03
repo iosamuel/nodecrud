@@ -1,21 +1,22 @@
-var models = require('./models');
+var DB = require('./models');
 var crypto = require('crypto');
 
-var productos = models.Productos;
-var users = models.Users;
+var db = new DB('crud');
+var productos = db.newDoc('producto');
+var users = db.newDoc('user');
 
 var sha1 = function(str){
 	return crypto.createHash('sha1').update(str).digest('hex');
 };
 
 exports.index = function(req, res) {
-	productos.view({ design:'productos', view:'all' }, { descending:true }, function(results){
+	db.view({ design:'productos', view:'byDate' }, { descending:true }, function(results){
 		res.render('index', {productos:results.rows});
 	});
 };
 
 exports.mios = function(req, res){
-	productos.view({ design:'productos', view:'all' }, { descending:true, key: '"'+req.session.user+'"' }, function(results){
+	db.view({ design:'productos', view:'byUser' }, { descending:true, startkey:'["'+req.session.user+'",{}]', endkey:'["'+req.session.user+'"]' }, function(results){
 		res.render('index', {productos:results.rows});
 	});
 };
@@ -29,6 +30,8 @@ exports.add = function(req, res) {
 	if (post && post.nombre && post.precio){
 		post.precio = parseInt(post.precio);
 		post.user = req.session.user;
+		post.created = Date.parse(new Date());
+
 		productos.post(post, function(result){
 			if (result.ok){
 				res.redirect('/');

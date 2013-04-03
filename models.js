@@ -10,12 +10,68 @@ var options = {
 	}
 };
 
-var Model = function(db, type){
+var DB = function(db){
+	this.db = db;
+};
+
+var Doc = function(db, type){
 	this.db = db;
 	this.type = type;
 };
 
-Model.prototype._makeReq = function(safe, data, cb) {
+DB.prototype.view = function(desview, opts, cb) {
+	options.path = '/'+this.db+'/_design/'+desview.design+'/_view/'+desview.view+'?'+querystring.stringify(opts);
+	options.method = 'GET';
+
+	_makeReq(false, null, cb);
+};
+
+DB.prototype.newDoc = function(type) {
+	return new Doc(this.db, type);
+};
+
+Doc.prototype.get = function(pid, cb) {
+	options.path = '/'+this.db+'/'+pid;
+	options.method = 'GET';
+
+	_makeReq(false, null, cb);
+};
+
+Doc.prototype.post = function(data, cb) {
+	options.path = '/'+this.db+'/';
+	options.method = 'POST';
+	data.type = this.type;
+	data = JSON.stringify(data);
+
+	_makeReq(true, data, cb);
+};
+
+Doc.prototype.delete = function(pid, cb) {
+	this.get(pid, function(result){
+		var fullPid = result._id + '?rev=' + result._rev;
+
+		options.path = '/'+this.db+'/'+fullPid;
+		options.method = 'DELETE';
+
+		_makeReq(false, null, cb);
+	}.bind(this));
+};
+
+Doc.prototype.put = function(pid, data, cb) {
+	data.type = this.type;
+	data = JSON.stringify(data);
+
+	this.get(pid, function(result){
+		var fullPid = result._id + '?rev=' + result._rev;
+
+		options.path = '/'+this.db+'/'+fullPid;
+		options.method = 'PUT';
+
+		_makeReq(true, data, cb);
+	}.bind(this));
+};
+
+var _makeReq = function(safe, data, cb) {
 	var results = '';
 	var req = http.request(options, function(res){
 		res
@@ -30,53 +86,4 @@ Model.prototype._makeReq = function(safe, data, cb) {
 	req.end();
 };
 
-Model.prototype.view = function(desview, opts, cb) {
-	options.path = '/'+this.db+'/_design/'+desview.design+'/_view/'+desview.view+'?'+querystring.stringify(opts);
-	options.method = 'GET';
-
-	this._makeReq(false, null, cb);
-};
-
-Model.prototype.get = function(pid, cb) {
-	options.path = '/'+this.db+'/'+pid;
-	options.method = 'GET';
-
-	this._makeReq(false, null, cb);
-};
-
-Model.prototype.post = function(data, cb) {
-	options.path = '/'+this.db+'/';
-	options.method = 'POST';
-	data.type = this.type;
-	data = JSON.stringify(data);
-
-	this._makeReq(true, data, cb);
-};
-
-Model.prototype.delete = function(pid, cb) {
-	this.get(pid, function(result){
-		var fullPid = result._id + '?rev=' + result._rev;
-
-		options.path = '/'+this.db+'/'+fullPid;
-		options.method = 'DELETE';
-
-		this._makeReq(false, null, cb);
-	}.bind(this));
-};
-
-Model.prototype.put = function(pid, data, cb) {
-	data.type = this.type;
-	data = JSON.stringify(data);
-
-	this.get(pid, function(result){
-		var fullPid = result._id + '?rev=' + result._rev;
-
-		options.path = '/'+this.db+'/'+fullPid;
-		options.method = 'PUT';
-
-		this._makeReq(true, data, cb);
-	}.bind(this));
-};
-
-exports.Productos = new Model('crud', 'producto');
-exports.Users = new Model('crud', 'user');
+module.exports = DB;
