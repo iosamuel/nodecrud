@@ -10,13 +10,21 @@ var sha1 = function(str){
 };
 
 exports.index = function(req, res) {
-	db.view({ design:'productos', view:'byDate' }, { descending:true }, function(results){
+	var options = {
+		descending: true
+	};
+	db.view({ design:'productos', view:'byDate', options:options }, function(results){
 		res.render('index', {productos:results.rows});
 	});
 };
 
 exports.mios = function(req, res){
-	db.view({ design:'productos', view:'byUser' }, { descending:true, startkey:'["'+req.session.user+'",{}]', endkey:'["'+req.session.user+'"]' }, function(results){
+	var options = {
+		descending:true,
+		startkey:'["'+req.session.user+'",{}]',
+		endkey:'["'+req.session.user+'"]'
+	};
+	db.view({ design:'productos', view:'byUser', options:options }, function(results){
 		res.render('index', {productos:results.rows});
 	});
 };

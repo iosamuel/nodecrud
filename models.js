@@ -19,11 +19,11 @@ var Doc = function(db, type){
 	this.type = type;
 };
 
-DB.prototype.view = function(desview, opts, cb) {
-	options.path = '/'+this.db+'/_design/'+desview.design+'/_view/'+desview.view+'?'+querystring.stringify(opts);
+DB.prototype.view = function(opts, cb) {
+	options.path = '/'+this.db+'/_design/'+opts.design+'/_view/'+opts.view+'?'+querystring.stringify(opts.options);
 	options.method = 'GET';
 
-	_makeReq(false, null, cb);
+	_makeReq(cb);
 };
 
 DB.prototype.newDoc = function(type) {
@@ -34,7 +34,7 @@ Doc.prototype.get = function(pid, cb) {
 	options.path = '/'+this.db+'/'+pid;
 	options.method = 'GET';
 
-	_makeReq(false, null, cb);
+	_makeReq(cb);
 };
 
 Doc.prototype.post = function(data, cb) {
@@ -43,7 +43,7 @@ Doc.prototype.post = function(data, cb) {
 	data.type = this.type;
 	data = JSON.stringify(data);
 
-	_makeReq(true, data, cb);
+	_makeReq(data, cb);
 };
 
 Doc.prototype.delete = function(pid, cb) {
@@ -53,7 +53,7 @@ Doc.prototype.delete = function(pid, cb) {
 		options.path = '/'+this.db+'/'+fullPid;
 		options.method = 'DELETE';
 
-		_makeReq(false, null, cb);
+		_makeReq(cb);
 	}.bind(this));
 };
 
@@ -67,11 +67,15 @@ Doc.prototype.put = function(pid, data, cb) {
 		options.path = '/'+this.db+'/'+fullPid;
 		options.method = 'PUT';
 
-		_makeReq(true, data, cb);
+		_makeReq(data, cb);
 	}.bind(this));
 };
 
-var _makeReq = function(safe, data, cb) {
+var _makeReq = function(data, cb) {
+	if (typeof data === 'function'){
+		cb = data;
+		data = null;
+	}
 	var results = '';
 	var req = http.request(options, function(res){
 		res
@@ -82,7 +86,7 @@ var _makeReq = function(safe, data, cb) {
 				cb(JSON.parse(results));
 			});
 	});
-	if (safe) req.write(data);
+	if (data) req.write(data);
 	req.end();
 };
 
