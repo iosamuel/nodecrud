@@ -10,12 +10,23 @@ var sha1 = function(str){
 };
 
 exports.index = function(req, res) {
-	var options = {
-		descending: true
-	};
-	db.view({ design:'productos', view:'byDate', options:options }, function(results){
-		res.render('index', {productos:results.rows});
-	});
+	if (!req.query.q){
+		var options = {
+			descending: true
+		};
+		db.view({ design:'productos', view:'byDate', options:options }, function(results){
+			res.render('index', {productos:results.rows});
+		});
+	} else {
+		var options = {
+			descending: true,
+			startkey: '["'+req.query.q+'\u9999",{}]',
+			endkey: '["'+req.query.q+'"]'
+		};
+		db.view({ design:'productos', view:'searchByNombre', options:options }, function(results){
+			res.render('index', {productos:results.rows});
+		});
+	}
 };
 
 exports.mios = function(req, res){
