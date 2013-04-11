@@ -30,14 +30,25 @@ exports.index = function(req, res) {
 };
 
 exports.mios = function(req, res){
-	var options = {
-		descending:true,
-		startkey:'["'+req.session.user+'",{}]',
-		endkey:'["'+req.session.user+'"]'
-	};
-	db.view({ design:'productos', view:'byUser', options:options }, function(results){
-		res.render('index', {productos:results.rows});
-	});
+	if (!req.query.q){
+		var options = {
+			descending:true,
+			startkey:'["'+req.session.user+'",{}]',
+			endkey:'["'+req.session.user+'"]'
+		};
+		db.view({ design:'productos', view:'byUser', options:options }, function(results){
+			res.render('index', {productos:results.rows});
+		});
+	} else {
+		var options = {
+			descending: true,
+			startkey: '["'+req.session.user+'","'+req.query.q+'\u9999",{}]',
+			endkey: '["'+req.session.user+'","'+req.query.q+'"]'
+		};
+		db.view({ design:'productos', view:'searchByNombreUser', options:options }, function(results){
+			res.render('index', {productos:results.rows});
+		});
+	}
 };
 
 exports.agregar = function(req, res) {
