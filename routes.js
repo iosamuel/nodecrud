@@ -9,6 +9,15 @@ var sha1 = function(str){
 	return crypto.createHash('sha1').update(str).digest('hex');
 };
 
+Array.prototype.unique = function(p) {
+	var i = {};
+	for (var n=0; n<this.length; n++){
+		var c = this[n][p];
+		if (i.hasOwnProperty(c)) { this.splice(n,1); n--; continue; }
+		i[c] = true;
+	}
+};
+
 exports.index = function(req, res) {
 	if (!req.query.q){
 		var options = {
@@ -24,6 +33,7 @@ exports.index = function(req, res) {
 			endkey: '["'+req.query.q+'"]'
 		};
 		db.view({ design:'productos', view:'searchByNombre', options:options }, function(results){
+			results.rows.unique('id');
 			res.render('index', {productos:results.rows});
 		});
 	}
@@ -46,6 +56,7 @@ exports.mios = function(req, res){
 			endkey: '["'+req.session.user+'","'+req.query.q+'"]'
 		};
 		db.view({ design:'productos', view:'searchByNombreUser', options:options }, function(results){
+			results.rows.unique('id');
 			res.render('index', {productos:results.rows});
 		});
 	}
