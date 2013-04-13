@@ -1,4 +1,4 @@
-var CouchDB = require('ouch');
+var CouchDB = require('souch');
 var crypto = require('crypto');
 
 var db = new CouchDB('crud', {
