@@ -1,7 +1,10 @@
-var DB = require('./models');
+var CouchDB = require('./models');
 var crypto = require('crypto');
 
-var db = new DB('crud');
+var db = new CouchDB('crud', {
+	user: 'user',
+	passwd: 'passwd'
+});
 var productos = db.newDoc('producto');
 var users = db.newDoc('user');
 
@@ -9,31 +12,22 @@ var sha1 = function(str){
 	return crypto.createHash('sha1').update(str).digest('hex');
 };
 
-Array.prototype.unique = function(p) {
-	var i = {};
-	for (var n=0; n<this.length; n++){
-		var c = this[n][p];
-		if (i.hasOwnProperty(c)) { this.splice(n,1); n--; continue; }
-		i[c] = true;
-	}
-};
-
 exports.index = function(req, res) {
 	if (!req.query.q){
 		var options = {
 			descending: true
 		};
-		db.view({ design:'productos', view:'byDate', options:options }, function(results){
+		db.design('productos', { type:'view', name:'byDate', params:options }, function(results){
 			res.render('index', {productos:results.rows});
 		});
 	} else {
 		var options = {
 			descending: true,
-			startkey: '["'+req.query.q+'\u9999",{}]',
-			endkey: '["'+req.query.q+'"]'
+			startkey: '["?\u9999",{}]'.format(req.query.q),
+			endkey: '["?"]'.format(req.query.q)
 		};
-		db.view({ design:'productos', view:'searchByNombre', options:options }, function(results){
-			results.rows.unique('id');
+		db.design('productos', { type:'view', name:'searchByNombre', params:options }, function(results){
+			results.rows.unique();
 			res.render('index', {productos:results.rows});
 		});
 	}
@@ -43,20 +37,20 @@ exports.mios = function(req, res){
 	if (!req.query.q){
 		var options = {
 			descending:true,
-			startkey:'["'+req.session.user+'",{}]',
-			endkey:'["'+req.session.user+'"]'
+			startkey:'["?",{}]'.format(req.session.user),
+			endkey:'["?"]'.format(req.session.user)
 		};
-		db.view({ design:'productos', view:'byUser', options:options }, function(results){
+		db.design('productos', { type:'view', name:'byUser', params:options }, function(results){
 			res.render('index', {productos:results.rows});
 		});
 	} else {
 		var options = {
 			descending: true,
-			startkey: '["'+req.session.user+'","'+req.query.q+'\u9999",{}]',
-			endkey: '["'+req.session.user+'","'+req.query.q+'"]'
+			startkey: '["?","?\u9999",{}]'.format(req.session.user, req.query.q),
+			endkey: '["?","?"]'.format(req.session.user, req.query.q)
 		};
-		db.view({ design:'productos', view:'searchByNombreUser', options:options }, function(results){
-			results.rows.unique('id');
+		db.design('productos', { type:'view', name:'searchByNombreUser', params:options }, function(results){
+			results.rows.unique();
 			res.render('index', {productos:results.rows});
 		});
 	}
@@ -118,12 +112,15 @@ exports.edit = function(req, res) {
 		var post = req.body;
 		post.user = req.session.user;
 
-		productos.put(req.params.id, post, function(result){
-			if (result.ok){
-				res.redirect('/');
-			} else {
-				res.send(500, 'Algo ha ido mal!');
-			}
+		productos.get(req.params.id, function(result){
+			post.created = result.created;
+			productos.put(req.params.id, post, function(result){
+				if (result.ok){
+					res.redirect('/');
+				} else {
+					res.send(500, 'Algo ha ido mal!');
+				}
+			});
 		});
 	} else {
 		res.send(500, 'Error!');
