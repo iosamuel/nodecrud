@@ -8,10 +8,6 @@ var db = new CouchDB('crud', {
 var productos = db.newDoc('producto');
 var users = db.newDoc('user');
 
-var sha1 = function(str){
-	return crypto.createHash('sha1').update(str).digest('hex');
-};
-
 exports.index = function(req, res) {
 	if (!req.query.q){
 		var options = {
@@ -131,7 +127,7 @@ exports.login = function(req, res){
 	if (req.body && req.body.user && req.body.passwd){
 		users.get(req.body.user, function(result){
 			if (result._id){
-				if (sha1(req.body.passwd) == result.passwd){
+				if (req.body.passwd.hash('sha1') == result.passwd){
 					req.session.user = result._id;
 					res.redirect('/');
 				} else {
@@ -155,7 +151,7 @@ exports.signup = function(req, res){
 				var post = req.body;
 				post._id = post.user;
 				delete post.user;
-				post.passwd = sha1(post.passwd);
+				post.passwd = post.passwd.hash('sha1');
 
 				users.post(post, function(result){
 					if (result.ok){
