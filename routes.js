@@ -1,5 +1,4 @@
 var CouchDB = require('souch');
-var crypto = require('crypto');
 
 var db = new CouchDB('crud', {
 	user: 'user',
@@ -13,7 +12,7 @@ exports.index = function(req, res) {
 		var options = {
 			descending: true
 		};
-		db.design('productos', { type:'view', name:'byDate', params:options }, function(results){
+		db.design('productos', { name:'byDate', params:options }, function(results){
 			res.render('index', {productos:results.rows});
 		});
 	} else {
@@ -22,7 +21,7 @@ exports.index = function(req, res) {
 			startkey: '["?\u9999",{}]'.format(req.query.q),
 			endkey: '["?"]'.format(req.query.q)
 		};
-		db.design('productos', { type:'view', name:'searchByNombre', params:options }, function(results){
+		db.design('productos', { name:'searchByNombre', params:options }, function(results){
 			results.rows.unique();
 			res.render('index', {productos:results.rows});
 		});
@@ -36,7 +35,7 @@ exports.mios = function(req, res){
 			startkey:'["?",{}]'.format(req.session.user),
 			endkey:'["?"]'.format(req.session.user)
 		};
-		db.design('productos', { type:'view', name:'byUser', params:options }, function(results){
+		db.design('productos', { name:'byUser', params:options }, function(results){
 			res.render('index', {productos:results.rows});
 		});
 	} else {
@@ -45,7 +44,7 @@ exports.mios = function(req, res){
 			startkey: '["?","?\u9999",{}]'.format(req.session.user, req.query.q),
 			endkey: '["?","?"]'.format(req.session.user, req.query.q)
 		};
-		db.design('productos', { type:'view', name:'searchByNombreUser', params:options }, function(results){
+		db.design('productos', { name:'searchByNombreUser', params:options }, function(results){
 			results.rows.unique();
 			res.render('index', {productos:results.rows});
 		});
