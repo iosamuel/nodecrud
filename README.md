@@ -8,4 +8,4 @@ Autor
 
 Samuel Burbano Ramos
 
-Twitter: @samuelb1311
+Twitter: @iosamuel
